@@ -1,0 +1,184 @@
+/**
+ * Metis theme for reveal.js
+ * Author: Paul Burkard http://github.com/pburkard88
+ *
+ * Designed to be used with highlight.js theme
+ * "monokai_sublime.css" available from
+ * https://github.com/isagalaev/highlight.js/
+ *
+ * For other themes, change $codeBackground accordingly.
+ *
+ */
+
+ // Default mixins and settings -----------------
+@import "../template/mixins";
+@import "../template/settings";
+// ---------------------------------------------
+
+// Include theme-specific fonts
+
+@import url(https://fonts.googleapis.com/css?family=Ubuntu:300,700,300italic,700italic);
+
+@font-face {
+  font-family: "Gotham A 1";
+    src: url("../../../lib/font/gotham/gotham_a_1.woff");
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Gotham B 1";
+    src: url("../../../lib/font/gotham/gotham_b_1.woff");
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Gotham A 2";
+    src: url("../../../lib/font/gotham/gotham_a_2.woff");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Gotham B 2";
+    src: url("../../../lib/font/gotham/gotham_b_2.woff");
+    font-weight: 400;
+    font-style: normal;
+}
+
+/*
+@font-face {
+    font-family: "Gotham A";
+    src: url("../../../lib/font/gotham/gotham_a_3.woff");
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Gotham B";
+    src: url("../../../lib/font/gotham/gotham_b_3.woff");
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Gotham A";
+    src: url("../../../lib/font/gotham/gotham_a_4.woff");
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Gotham B";
+    src: url("../../../lib/font/gotham/gotham_b_4.woff");
+    font-weight: 500;
+    font-style: normal;
+}
+*/
+
+@font-face {
+    font-family: "Gotham A 5";
+    src: url("../../../lib/font/gotham/gotham_a_5.woff");
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Gotham B 5";
+    src: url("../../../lib/font/gotham/gotham_b_5.woff");
+    font-weight: 700;
+    font-style: normal;
+}
+
+/*
+@font-face {
+    font-family: "Gotham A";
+    src: url("../../../lib/font/gotham/gotham_a_6.woff");
+    font-weight: 700;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Gotham B";
+    src: url("../../../lib/font/gotham/gotham_b_6.woff");
+    font-weight: 700;
+    font-style: italic;
+}
+*/
+
+// Colors used in the theme
+$red: #DB385F;
+$blue: #399FD9;
+$fuschia: #DC2D8A;
+$teal: #1F5E85;
+$offwhite: #FEFEFE;
+$codeBackground: #eee;
+$codeColor: #8a8a8a;
+$codeBorder: #cacaca;
+$codeBorderWidth: 4px;
+
+$backgroundColor: $blue;
+
+// Main text
+$mainFont: 'Gotham A 1', 'Gotham B 1';
+$mainFontSize: 36px;
+$mainColor: $offwhite;
+
+// Headings
+$headingFont: 'Gotham A 2', 'Gotham B 2';
+$headingColor: $offwhite;
+$headingTextShadow: none;
+$headingTextTransform: uppercase;
+
+// h1 shadow, borrowed humbly from
+// (c) Default theme by Hakim El Hattab
+$heading1TextShadow: none;
+
+// Links
+$linkColor: $offwhite;
+$linkColorHover: $blue;
+
+// Text selection
+$selectionBackgroundColor: $blue;
+$selectionColor: #fff;
+
+
+// Theme template ------------------------------
+@import "../template/theme";
+// ---------------------------------------------
+
+// some overrides after theme template import
+
+.reveal p {
+    font-weight: 300;
+    text-shadow: none;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+    font-weight: 700;
+    background-color: $blue;
+}
+
+.reveal p code {
+    background-color: $codeBackground;
+    color: $codeColor;
+    border-style: solid;
+    border-color: $codeBorder;
+    border-width: $codeBorderWidth;
+    display: inline-block;
+    border-radius: 7px;
+}
+
+.reveal small code {
+    vertical-align: baseline;
+}
+
+.reveal a {
+  text-decoration: underline;
+}

@@ -76,6 +76,8 @@ Object.getPrototypeOf(IPython.notebook).get_cell_elements = function () {
  * structure expected by reveal.js
  */
 function markupSlides(container) {
+    // Add the containers for headers
+    $('<div id="headers">').appendTo($('#notebook'));
     // Machinery to create slide/subslide <section>s and give them IDs
     var slide_counter = -1, subslide_counter = -1;
     var slide_section, subslide_section;
@@ -124,7 +126,7 @@ function markupSlides(container) {
                 // Start new subslide
                 current_fragment = subslide_section = new_subslide();
             } else if (slide_type === 'fragment') {
-                current_fragment = $('<div>').addClass('fragment')
+                current_fragment = $('<div>').addClass('fragment').addClass('zoom-in')
                                     .appendTo(subslide_section);
             }
         } else if (slide_type !== 'notes' && slide_type !== 'skip') {
@@ -146,6 +148,15 @@ function markupSlides(container) {
             );
         } else {
             current_fragment.append(cell.element);
+            // Add Header(s)
+            var h = $(cell.element).find('h1, h2, h3, h4, h5, h6');
+            if (h.length != 0 && $(h).next().length != 0) {
+              $('<div>').attr('id', 'header-' + slide_counter + '-' + subslide_counter).addClass('header').appendTo($('#headers'));
+              $(h).appendTo($('#header-' + slide_counter + '-' + subslide_counter));
+              if (slide_counter != selected_cell_slide[0] || subslide_counter != selected_cell_slide[1]) {
+                $('#header-' + slide_counter + '-' + subslide_counter).css('border-top-style', 'none').hide();
+              }
+           }
         }
 
         // Hide skipped cells
@@ -177,7 +188,7 @@ function setStartingSlide(selected, config) {
 }
 
 /* Setup a MutationObserver to call Reveal.sync when an output is generated.
- * This fixes issue #188: https://github.com/damianavila/RISE/issues/188 
+ * This fixes issue #188: https://github.com/damianavila/RISE/issues/188
  */
 var outputObserver = null;
 function setupOutputObserver() {
@@ -192,7 +203,7 @@ function setupOutputObserver() {
   var $output = $(".output");
   var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
   outputObserver = new MutationObserver(mutationHandler);
-  
+
   var observerConfig = { childList: true, characterData: false, attributes: false, subtree: false };
   $output.each(function () {
     outputObserver.observe(this, observerConfig);
@@ -209,8 +220,9 @@ function disconnectOutputObserver() {
 function Revealer(config) {
   $('body').addClass("rise-enabled");
   // Prepare the DOM to start the slideshow
-  //$('div#header').hide();
+  $('#header').hide();
   //$('div#site').css("height", "100%");
+  $('#site').height($('body').height());
   //$('div#ipython-main-app').css("position", "static");
   // Set up the scrolling feature
   var scroll = config.get_sync('scroll');
@@ -291,13 +303,73 @@ function Revealer(config) {
     Reveal.addEventListener( 'ready', function( event ) {
       Unselecter();
       window.scrollTo(0,0);
+      $('#header').hide();
+      $('#site').height($('body').height());
       Reveal.layout();
       $('#start_livereveal').blur();
     });
 
     Reveal.addEventListener( 'slidechanged', function( event ) {
       Unselecter();
-      window.scrollTo(0,0);
+      // Hide/Show Headers
+      var prev_slide_num = event.previousSlide.id[event.previousSlide.id.length-3];
+      var prev_subslide_num = event.previousSlide.id[event.previousSlide.id.length-1];
+      $('#header-' + prev_slide_num + '-' + prev_subslide_num).hide();
+      $('#header-' + event.indexh + '-' + event.indexv).show();
+      // Adjust text to be below header
+      var header_height = $('#header-' + event.indexh + '-' + event.indexv).children()[0].clientHeight - 20;
+      $('#slide-' + event.indexh + '-' + event.indexv).css('top', '+=' + header_height + 'px', 'important');
+      //window.scrollTo(0,0);
+      //window.scroll(0,0);
+      //$('body').scrollTop(true);
+      if (event.currentSlide.id > event.previousSlide.id) {
+        $("body").animate({ scrollTop: 0 }, "slow");
+      }
+      else {
+        var slide = $(event.currentSlide);
+        $("body").animate({ scrollTop: slide.height() + $(event.previousSlide).offset()['top'] - $('body').height() + 2}, "slow");
+      }
+      MathJax.Hub.Rerender(event.currentSlide);
+    });
+
+    Reveal.addEventListener( 'fragmentshown', function( event ) {
+      if (event.fragment.clientHeight > 50) {
+        var screenHeight = $('body').height();
+        var fragment = $(event.fragment);
+        if (fragment.height() < screenHeight) {
+          if (fragment.next().length != 0) {
+            $('body').animate({scrollTop: fragment.prev().offset()['top'] + fragment.prev().height() + 12 + fragment.height() - screenHeight}, "slow");
+          }
+          /*
+          if (event.fragment.nextSibling) {
+            $('body').animate({scrollTop: $(event.fragment.nextSibling).offset()['top'] - screenHeight}, "slow");
+          }
+          */
+          else {
+            $('body').animate({scrollTop: $('section .present').height() + $('section .present').offset()['top'] + 2 - screenHeight}, "slow");
+          }
+        }
+        else {
+          $('body').animate({scrollTop: fragment.prev().offset()['top'] + fragment.prev().height() - 88}, "slow");
+        }
+      }
+      console.log(event)
+      MathJax.Hub.Rerender();
+    });
+
+    Reveal.addEventListener( 'fragmenthidden', function( event ) {
+      if (event.fragment.clientHeight > 50) {
+        var screenHeight = $('body').height();
+        var previous = $(event.fragment).prev();
+        if (previous.prev().length == 0) {
+          $('body').animate({scrollTop: 0}, 'slow');
+        }
+        else {
+          $('body').animate({scrollTop: Math.max(previous.offset()['top'] + previous.height() + 2 -screenHeight, 0)}, "slow");
+        }
+      }
+      console.log(event)
+      MathJax.Hub.Rerender();
     });
 
     setupOutputObserver();
@@ -387,12 +459,14 @@ function buttonHelp() {
     var help_button = $('<i/>')
         .attr('id','help_b')
         .attr('title','Reveal Shortcuts Help')
-        .addClass('fa-question fa-4x fa')
+        .addClass('fa-question fa-3x fa')
         .addClass('my-main-tool-bar')
         .css('position','fixed')
-        .css('bottom','0.5em')
-        .css('left','0.6em')
+        .css('bottom','0.1em')
+        .css('left','0.1em')
         .css('opacity', '0.6')
+        .css('z-index', 1)
+        .css('cursor', 'pointer')
         .click(
             function(){
                 KeysMessager();
@@ -405,12 +479,14 @@ function buttonExit() {
     var exit_button = $('<i/>')
         .attr('id','exit_b')
         .attr('title','RISE Exit')
-        .addClass('fa-times-circle fa-4x fa')
+        .addClass('fa-times-circle fa-3x fa')
         .addClass('my-main-tool-bar')
         .css('position','fixed')
-        .css('top','0.5em')
-        .css('left','0.48em')
+        .css('top','0.1em')
+        .css('left','0.1em')
         .css('opacity', '0.6')
+        .css('z-index', 1)
+        .css('cursor', 'pointer')
         .click(
             function(){
                 revealMode('simple', 'zoom');
@@ -443,6 +519,7 @@ function Remover(config) {
   $('#theme').remove();
   $('#revealcss').remove();
 
+  $('#headers').remove();
   $('.progress').remove();
   $('.controls').remove();
   $('.slide-number').remove();
@@ -457,6 +534,8 @@ function Remover(config) {
 
   $('div#notebook-container').children('section').remove();
   $('.end_space').appendTo('div#notebook');
+  $('#site').height($('body').height() - $('#header').height());
+  $('#header').show();
   IPython.page.show_site();
 
   disconnectOutputObserver();
@@ -477,12 +556,20 @@ function revealMode() {
     setStartingSlide(selected_slide, config);
     // Adding the reveal stuff
     Revealer(config);
+    // Format Code blocks in Reveal mode (Hide gutter and resize)
+    $('.prompt.input_prompt').each(function(i, t) {t.hidden = true;});
+    $('.code_cell').each(function(i, t) {t.style.paddingLeft = '50px'; t.style.paddingRight = '65px';});
     // Minor modifications for usability
     setupKeys("reveal_mode");
     buttonExit();
     buttonHelp();
     $('#maintoolbar').addClass('reveal_tagging');
   } else {
+    $('#site').height($('body').height()-$('#header').height());
+    $('#header').show();
+    // Format Code blocks returning from Reveal mode (Show gutter and resize)
+    $('.prompt.input_prompt').each(function(i, t) {t.hidden = false;});
+    $('.code_cell').each(function(i, t) {t.style.paddingLeft = '5px'; t.style.paddingRight = '5px';});
     Remover(config);
     setupKeys("notebook_mode");
     $('#exit_b').remove();

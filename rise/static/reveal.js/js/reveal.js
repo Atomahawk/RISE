@@ -2972,7 +2972,9 @@ var Reveal = (function(){
 	 * Handler for the window level 'resize' event.
 	 */
 	function onWindowResize( event ) {
-
+		
+		$('#header').hide();
+		$('#site').height($('body').height());
 		layout();
 
 	}

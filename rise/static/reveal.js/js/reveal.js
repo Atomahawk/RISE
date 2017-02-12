@@ -1173,7 +1173,7 @@ var Reveal = (function(){
 					else {
 						// var header_height = Math.max(0, $(slide.id.replace('slide', '#header')).children(0).height() - 25);
 						var header_bottom = Math.max(0, $(slide.id.replace('slide', '#header')).children(0).height());
-						var footer_top = $('#slide-footer').offset()['top'];
+						var footer_top = parseInt($('#slide-footer').css('top'));
 						if (!header_bottom) {
 							header_bottom = 0;
 						}

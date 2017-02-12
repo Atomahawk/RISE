@@ -127,7 +127,6 @@ var Reveal = (function(){
 		currentSlide,
 
 		previousBackground,
-		previousHeader,
 
 		// Slides may hold a data-state attribute which we pick up and apply
 		// as a class to the body. This list contains the combined state of
@@ -329,9 +328,6 @@ var Reveal = (function(){
 		// Update all backgrounds
 		updateBackground( true );
 
-		// Update all Headers
-		updateHeader( true );
-
 		// Notify listeners that the presentation is ready but use a 1ms
 		// timeout to ensure it's not fired synchronously after #initialize()
 		setTimeout( function() {
@@ -364,22 +360,14 @@ var Reveal = (function(){
 		// Prevent transitions while we're loading
 		dom.slides.classList.add( 'no-transition' );
 
-		// Backgrounds element
+		// Background element
 		dom.background = createSingletonNode( dom.wrapper, 'div', 'backgrounds', null );
-
-		// TODO: Create Headers and Footers Element
-		// Headers element
-		// dom.headers = createSingletonNode( dom.wrapper, 'div', 'headers', null);
-
-		// Footers element
-		dom.footers = createSingletonNode( dom.wrapper, 'div', 'footers', null);
 
 		// Progress bar
 		dom.progress = createSingletonNode( dom.wrapper, 'div', 'progress', '<span></span>' );
 		dom.progressbar = dom.progress.querySelector( 'span' );
 
 		// Arrow controls
-		// TODO: Understand these better and maybe change
 		createSingletonNode( dom.wrapper, 'aside', 'controls',
 			'<div class="navigate-left"></div>' +
 			'<div class="navigate-right"></div>' +
@@ -433,8 +421,6 @@ var Reveal = (function(){
 	 * to the background container. One element is created per
 	 * slide no matter if the given slide has visible background.
 	 */
-	 // TODO: Create createHeaders/Footers analogous to this
-	 // TODO: Allow for rotating background colors
 	function createBackgrounds() {
 
 		if( isPrintingPDF() ) {
@@ -541,127 +527,6 @@ var Reveal = (function(){
 	}
 
 	/**
-	 * Creates the slide background elements and appends them
-	 * to the background container. One element is created per
-	 * slide no matter if the given slide has visible background.
-	 */
-	 // TODO: Create createHeaders/Footers analogous to this
-	 // TODO: Allow for rotating background colors
-	// function createBackgrounds() {
-	//
-	// 	if( isPrintingPDF() ) {
-	// 		document.body.classList.add( 'print-pdf' );
-	// 	}
-	//
-	// 	// Clear prior backgrounds
-	// 	dom.background.innerHTML = '';
-	// 	dom.background.classList.add( 'no-transition' );
-	//
-	// 	// Helper method for creating a background element for the
-	// 	// given slide
-	// 	function _createBackground( slide, container ) {
-	//
-	// 		var data = {
-	// 			background: slide.getAttribute( 'data-background' ),
-	// 			backgroundSize: slide.getAttribute( 'data-background-size' ),
-	// 			backgroundImage: slide.getAttribute( 'data-background-image' ),
-	// 			backgroundColor: slide.getAttribute( 'data-background-color' ),
-	// 			backgroundRepeat: slide.getAttribute( 'data-background-repeat' ),
-	// 			backgroundPosition: slide.getAttribute( 'data-background-position' ),
-	// 			backgroundTransition: slide.getAttribute( 'data-background-transition' )
-	// 		};
-	//
-	// 		var element = document.createElement( 'div' );
-	// 		element.className = 'slide-background';
-	//
-	// 		if( data.background ) {
-	// 			// Auto-wrap image urls in url(...)
-	// 			if( /^(http|file|\/\/)/gi.test( data.background ) || /\.(svg|png|jpg|jpeg|gif|bmp)$/gi.test( data.background ) ) {
-	// 				element.style.backgroundImage = 'url('+ data.background +')';
-	// 			}
-	// 			else {
-	// 				element.style.background = data.background;
-	// 			}
-	// 		}
-	//
-	// 		if( data.background || data.backgroundColor || data.backgroundImage ) {
-	// 			element.setAttribute( 'data-background-hash', data.background + data.backgroundSize + data.backgroundImage + data.backgroundColor + data.backgroundRepeat + data.backgroundPosition + data.backgroundTransition );
-	// 		}
-	//
-	// 		// Additional and optional background properties
-	// 		if( data.backgroundSize ) element.style.backgroundSize = data.backgroundSize;
-	// 		if( data.backgroundImage ) element.style.backgroundImage = 'url("' + data.backgroundImage + '")';
-	// 		if( data.backgroundColor ) element.style.backgroundColor = data.backgroundColor;
-	// 		if( data.backgroundRepeat ) element.style.backgroundRepeat = data.backgroundRepeat;
-	// 		if( data.backgroundPosition ) element.style.backgroundPosition = data.backgroundPosition;
-	// 		if( data.backgroundTransition ) element.setAttribute( 'data-background-transition', data.backgroundTransition );
-	//
-	// 		container.appendChild( element );
-	//
-	// 		return element;
-	//
-	// 	}
-	//
-	// 	// Iterate over all horizontal slides
-	// 	toArray( document.querySelectorAll( HORIZONTAL_SLIDES_SELECTOR ) ).forEach( function( slideh ) {
-	//
-	// 		var backgroundStack;
-	//
-	// 		if( isPrintingPDF() ) {
-	// 			backgroundStack = _createBackground( slideh, slideh );
-	// 		}
-	// 		else {
-	// 			backgroundStack = _createBackground( slideh, dom.background );
-	// 		}
-	//
-	// 		// Iterate over all vertical slides
-	// 		toArray( slideh.querySelectorAll( 'section' ) ).forEach( function( slidev ) {
-	//
-	// 			if( isPrintingPDF() ) {
-	// 				_createBackground( slidev, slidev );
-	// 			}
-	// 			else {
-	// 				_createBackground( slidev, backgroundStack );
-	// 			}
-	//
-	// 		} );
-	//
-	// 	} );
-	//
-	// 	// Add parallax background if specified
-	// 	if( config.parallaxBackgroundImage ) {
-	//
-	// 		dom.background.style.backgroundImage = 'url("' + config.parallaxBackgroundImage + '")';
-	// 		dom.background.style.backgroundSize = config.parallaxBackgroundSize;
-	//
-	// 		// Make sure the below properties are set on the element - these properties are
-	// 		// needed for proper transitions to be set on the element via CSS. To remove
-	// 		// annoying background slide-in effect when the presentation starts, apply
-	// 		// these properties after short time delay
-	// 		setTimeout( function() {
-	// 			dom.wrapper.classList.add( 'has-parallax-background' );
-	// 		}, 1 );
-	//
-	// 	}
-	// 	else {
-	//
-	// 		dom.background.style.backgroundImage = '';
-	// 		dom.wrapper.classList.remove( 'has-parallax-background' );
-	//
-	// 	}
-	//
-	// }
-	//
-	/**
-	 * Creates the slide header elements and appends them
-	 * to the headers container. One element is created per
-	 * slide no matter if the given slide has visible header.
-	 */
-	 // TODO: Create createHeaders
-	function createHeaders() {
-	}
-
-	/**
 	 * Applies the configuration settings from the config
 	 * object. May be called multiple times.
 	 */
@@ -759,7 +624,6 @@ var Reveal = (function(){
 	/**
 	 * Binds all event listeners.
 	 */
-	 // TODO: Add slide and fragment change events
 	function addEventListeners() {
 
 		eventsAreBound = true;
@@ -815,80 +679,6 @@ var Reveal = (function(){
 			dom.controlsNext.forEach( function( el ) { el.addEventListener( eventName, onNavigateNextClicked, false ); } );
 		} );
 
-		// TODO: Figure out if there's a way to incorporate this in reveal rather than RISE
-		// Reveal.addEventListener( 'ready', function( event ) {
-    //   Unselecter();
-    //   window.scrollTo(0,0);
-    //   $('#header').hide();
-    //   $('#site').height($('body').height());
-    //   Reveal.layout();
-    //   $('#start_livereveal').blur();
-    // });
-
-    Reveal.addEventListener( 'slidechanged', function( event ) {
-			// TODO: Is unselecter needed?
-			// Unselecter();
-      // Hide/Show Headers
-      // var prev_slide_num = event.previousSlide.id[event.previousSlide.id.length-3];
-      // var prev_subslide_num = event.previousSlide.id[event.previousSlide.id.length-1];
-      // $('#header-' + prev_slide_num + '-' + prev_subslide_num).hide();
-      // $('#header-' + event.indexh + '-' + event.indexv).show();
-      // // Adjust text to be below header
-      // var header_height = $('#header-' + event.indexh + '-' + event.indexv).children()[0].clientHeight - 20;
-      // $('#slide-' + event.indexh + '-' + event.indexv).css('top', '+=' + header_height + 'px', 'important');
-      //window.scrollTo(0,0);
-      //window.scroll(0,0);
-      //$('body').scrollTop(true);
-      if (event.currentSlide.id > event.previousSlide.id) {
-        $("body").animate({ scrollTop: 0 }, "slow");
-      }
-      else {
-        var slide = $(event.currentSlide);
-				$("body").animate({ scrollTop: Math.max(slide.height() - ($(window).height() - $('#slide-footer').height()), 0)}, "slow");
-        // $("body").animate({ scrollTop: slide.height() + $(event.previousSlide).offset()['top'] - $('body').height() + $('#slide-footer').height() + 2}, "slow");
-      }
-      // MathJax.Hub.Rerender(event.currentSlide);
-    });
-
-    Reveal.addEventListener( 'fragmentshown', function( event ) {
-			var footer_height = $('#slide-footer').height();
-      if (event.fragment.clientHeight > 50) {
-        var screenHeight = $('body').height() - footer_height;
-        var fragment = $(event.fragment);
-        if (fragment.height() < screenHeight) {
-          if (fragment.next().length != 0) {
-            $('body').animate({scrollTop: fragment.prev().offset()['top'] + fragment.prev().height() + 12 + fragment.height() - screenHeight}, "slow");
-          }
-          /*
-          if (event.fragment.nextSibling) {
-            $('body').animate({scrollTop: $(event.fragment.nextSibling).offset()['top'] - screenHeight}, "slow");
-          }
-          */
-          else {
-            $('body').animate({scrollTop: $('section .present').height() + $('section .present').offset()['top'] + 2 - screenHeight}, "slow");
-          }
-        }
-        else {
-          $('body').animate({scrollTop: fragment.prev().offset()['top'] + fragment.prev().height() - 88}, "slow");
-        }
-      }
-      // MathJax.Hub.Rerender(event.fragment);
-    });
-
-    Reveal.addEventListener( 'fragmenthidden', function( event ) {
-			var footer_height = $('#slide-footer').height();
-      if (event.fragment.clientHeight > 30) {
-        var screenHeight = $('body').height() - footer_height;
-        var previous = $(event.fragment).prev();
-        if (previous.prev().length == 0) {
-          $('body').animate({scrollTop: 0}, 'slow');
-        }
-        else {
-          $('body').animate({scrollTop: Math.max(previous.offset()['top'] + previous.height() + 2 -screenHeight, 0)}, "slow");
-        }
-      }
-      // MathJax.Hub.Rerender(event.fragment);
-    });
 	}
 
 	/**
@@ -1066,7 +856,6 @@ var Reveal = (function(){
 	/**
 	 * Hides the address bar if we're on a mobile device.
 	 */
-	 // TODO: Make address bar hide on desktop too?
 	function hideAddressBar() {
 
 		if( config.hideAddressBar && isMobileDevice ) {
@@ -1234,7 +1023,6 @@ var Reveal = (function(){
 	 * Applies JavaScript-controlled layout rules to the
 	 * presentation.
 	 */
-	 // TODO: Adjust slide height/width setups if necessary
 	function layout() {
 
 		if( dom.wrapper && !isPrintingPDF() ) {
@@ -1303,11 +1091,7 @@ var Reveal = (function(){
 						slide.style.top = 0;
 					}
 					else {
-						var header_height = $(slide.id.replace('slide', '#header')).children(0).height() - 25;
-						if (!header_height) {
-							header_height = 0;
-						}
-						slide.style.top = Math.max( - ( getAbsoluteHeight( slide ) / 2 ) - slidePadding + header_height, -slideHeight / 2 + header_height) + 'px';
+						slide.style.top = Math.max( - ( getAbsoluteHeight( slide ) / 2 ) - slidePadding, -slideHeight / 2 ) + 'px';
 					}
 				}
 				else {
@@ -1661,8 +1445,6 @@ var Reveal = (function(){
 	 * target slide to activate
 	 * @param {int} o Optional origin for use in multimaster environments
 	 */
-	 // TODO: Handle weird triple event calling...
-	 // TODO: Handle various slide change usability things
 	function slide( h, v, f, o ) {
 
 		// Remember where we were at before
@@ -1744,17 +1526,13 @@ var Reveal = (function(){
 		// Dispatch an event if the slide changed
 		var slideChanged = ( indexh !== indexhBefore || indexv !== indexvBefore );
 		if( slideChanged ) {
-			var sc = dispatchEvent( 'slidechanged', {
+			dispatchEvent( 'slidechanged', {
 				'indexh': indexh,
 				'indexv': indexv,
 				'previousSlide': previousSlide,
 				'currentSlide': currentSlide,
 				'origin': o
 			} );
-
-			$.when.apply(this, sc).done(function() {
-    		MathJax.Hub.Rerender(currentSlide);
-    	});
 		}
 		else {
 			// Ensure that the previous slide is never the same as the current
@@ -1792,7 +1570,6 @@ var Reveal = (function(){
 		updateControls();
 		updateProgress();
 		updateBackground();
-		updateHeader();
 		updateParallax();
 		updateSlideNumber();
 
@@ -1831,7 +1608,6 @@ var Reveal = (function(){
 		updateControls();
 		updateProgress();
 		updateBackground( true );
-		updateHeader( true );
 		updateSlideNumber();
 
 	}
@@ -2227,153 +2003,6 @@ var Reveal = (function(){
 		}, 1 );
 
 	}
-
-	/**
-	 * Updates the background elements to reflect the current
-	 * slide.
-	 *
-	 * @param {Boolean} includeAll If true, the backgrounds of
-	 * all vertical slides (not just the present) will be updated.
-	 */
-	 // TODO: Update Header
-	function updateHeader( includeAll ) {
-
-		var currentHeader = null;
-
-		// Reverse past/future classes when in RTL mode
-		var horizontalPast = config.rtl ? 'future' : 'past',
-			horizontalFuture = config.rtl ? 'past' : 'future';
-
-		// Update the classes of all backgrounds to match the
-		// states of their slides (past/present/future)
-		toArray( $('#slide-headers').children() ).forEach( function( headerh, h ) {
-
-			if( h < indexh ) {
-				headerh.className = 'slide-header ' + horizontalPast;
-			}
-			else if ( h > indexh ) {
-				headerh.className = 'slide-header ' + horizontalFuture;
-			}
-			else {
-				headerh.className = 'slide-header present';
-
-				// Store a reference to the current background element
-				currentHeader = headerh;
-			}
-
-			if( includeAll || h === indexh ) {
-				toArray( headerh.childNodes ).forEach( function( headerv, v ) {
-
-					if( v < indexv ) {
-						headerv.className = 'slide-header past';
-					}
-					else if ( v > indexv ) {
-						headerv.className = 'slide-header future';
-					}
-					else {
-						headerv.className = 'slide-header present';
-
-						// Only if this is the present horizontal and vertical slide
-						if( h === indexh ) currentHeader = headerv;
-					}
-
-				} );
-			}
-
-		} );
-
-		// Don't transition between identical backgrounds. This
-		// prevents unwanted flicker.
-		if( currentHeader ) {
-			var previousHeaderHash = previousHeader ? previousHeader.getAttribute( 'data-header-hash' ) : null;
-			var currentHeaderHash = currentHeader.getAttribute( 'data-header-hash' );
-			if( currentHeaderHash && currentHeaderHash === previousHeaderHash && currentHeader !== previousHeader ) {
-				$('#slide-headers').addClass( 'no-transition' );
-			}
-
-			previousHeader = currentHeader;
-		}
-
-		// Allow the first header to apply without transition
-		setTimeout( function() {
-			$('#slide-headers').removeClass( 'no-transition' );
-		}, 1 );
-
-	}
-
-	/**
-	 * Updates the background elements to reflect the current
-	 * slide.
-	 *
-	 * @param {Boolean} includeAll If true, the backgrounds of
-	 * all vertical slides (not just the present) will be updated.
-	 */
-	 // TODO: updateFooter Function
-	// function updateFooter( includeAll ) {
-	//
-	// 	var currentBackground = null;
-	//
-	// 	// Reverse past/future classes when in RTL mode
-	// 	var horizontalPast = config.rtl ? 'future' : 'past',
-	// 		horizontalFuture = config.rtl ? 'past' : 'future';
-	//
-	// 	// Update the classes of all backgrounds to match the
-	// 	// states of their slides (past/present/future)
-	// 	toArray( dom.background.childNodes ).forEach( function( backgroundh, h ) {
-	//
-	// 		if( h < indexh ) {
-	// 			backgroundh.className = 'slide-background ' + horizontalPast;
-	// 		}
-	// 		else if ( h > indexh ) {
-	// 			backgroundh.className = 'slide-background ' + horizontalFuture;
-	// 		}
-	// 		else {
-	// 			backgroundh.className = 'slide-background present';
-	//
-	// 			// Store a reference to the current background element
-	// 			currentBackground = backgroundh;
-	// 		}
-	//
-	// 		if( includeAll || h === indexh ) {
-	// 			toArray( backgroundh.childNodes ).forEach( function( backgroundv, v ) {
-	//
-	// 				if( v < indexv ) {
-	// 					backgroundv.className = 'slide-background past';
-	// 				}
-	// 				else if ( v > indexv ) {
-	// 					backgroundv.className = 'slide-background future';
-	// 				}
-	// 				else {
-	// 					backgroundv.className = 'slide-background present';
-	//
-	// 					// Only if this is the present horizontal and vertical slide
-	// 					if( h === indexh ) currentBackground = backgroundv;
-	// 				}
-	//
-	// 			} );
-	// 		}
-	//
-	// 	} );
-
-		// Don't transition between identical backgrounds. This
-		// prevents unwanted flicker.
-	// 	if( currentBackground ) {
-	// 		var previousBackgroundHash = previousBackground ? previousBackground.getAttribute( 'data-background-hash' ) : null;
-	// 		var currentBackgroundHash = currentBackground.getAttribute( 'data-background-hash' );
-	// 		if( currentBackgroundHash && currentBackgroundHash === previousBackgroundHash && currentBackground !== previousBackground ) {
-	// 			dom.background.classList.add( 'no-transition' );
-	// 		}
-	//
-	// 		previousBackground = currentBackground;
-	// 	}
-	//
-	// 	// Allow the first background to apply without transition
-	// 	setTimeout( function() {
-	// 		dom.background.classList.remove( 'no-transition' );
-	// 	}, 1 );
-	//
-	// }
-
 
 	/**
 	 * Updates the position of the parallax background based
@@ -3343,7 +2972,7 @@ var Reveal = (function(){
 	 * Handler for the window level 'resize' event.
 	 */
 	function onWindowResize( event ) {
-		// TODO: Is the #header removal necessary here?  Do it in a more general way?
+
 		$('#header').hide();
 		$('#site').height($('body').height());
 		layout();

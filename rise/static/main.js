@@ -78,10 +78,6 @@ Object.getPrototypeOf(IPython.notebook).get_cell_elements = function () {
  * structure expected by reveal.js
  */
 function markupSlides(container) {
-    // Add the footer
-    $('<div id="slide-footer" class="slide-footer">').appendTo($('#notebook_panel'));
-    // TODO: Add image to footer
-    $('<img src="/nbextensions/rise/reveal.js/lib/img/metis_logo.png">').css('position', 'relative').css('left', '2%').css('top', '5%').css('height', '90%').appendTo($('#slide-footer'));
     // Add the containers for headers
     $('<div id="slide-headers" class="slide-headers">').appendTo($('#notebook'));
     // Machinery to create slide/subslide <section>s and give them IDs
@@ -216,8 +212,16 @@ var outputObserver = null;
 function setupOutputObserver() {
   function mutationHandler(mutationRecords) {
     mutationRecords.forEach(function(mutation) {
-      if (mutation.addedNodes && mutation.addedNodes.length) {
+      if ((mutation.addedNodes && mutation.addedNodes.length) || (mutation.removedNodes && mutation.removedNodes.length)) {
         Reveal.sync();
+        // Scrolling for fragment output
+        // TODO: Handle possible alternate cases here
+        var current_fragment = $(mutation.target).parents('.fragment');
+        // Only scroll if it's the current slide fragment that has been updated
+        if (current_fragment.parent().attr('id') === Reveal.getCurrentSlide().id) {
+          var fragment_bottom = current_fragment.offset()['top'] + current_fragment.height();
+          $('body').animate({scrollTop: fragment_bottom + $('#slide-footer').height() - $(window).height()}, 'slow');
+        }
       }
     });
   }
@@ -330,69 +334,6 @@ function Revealer(config) {
       Reveal.layout();
       $('#start_livereveal').blur();
     });
-    //
-    // Reveal.addEventListener( 'slidechanged', function( event ) {
-    //   Unselecter();
-    //   // Hide/Show Headers
-    //   var prev_slide_num = event.previousSlide.id[event.previousSlide.id.length-3];
-    //   var prev_subslide_num = event.previousSlide.id[event.previousSlide.id.length-1];
-    //   $('#header-' + prev_slide_num + '-' + prev_subslide_num).hide();
-    //   $('#header-' + event.indexh + '-' + event.indexv).show();
-    //   // Adjust text to be below header
-    //   var header_height = $('#header-' + event.indexh + '-' + event.indexv).children()[0].clientHeight - 20;
-    //   $('#slide-' + event.indexh + '-' + event.indexv).css('top', '+=' + header_height + 'px', 'important');
-    //   //window.scrollTo(0,0);
-    //   //window.scroll(0,0);
-    //   //$('body').scrollTop(true);
-    //   if (event.currentSlide.id > event.previousSlide.id) {
-    //     $("body").animate({ scrollTop: 0 }, "slow");
-    //   }
-    //   else {
-    //     var slide = $(event.currentSlide);
-    //     $("body").animate({ scrollTop: slide.height() + $(event.previousSlide).offset()['top'] - $('body').height() + 2}, "slow");
-    //   }
-    //   MathJax.Hub.Rerender(event.currentSlide);
-    // });
-    //
-    // Reveal.addEventListener( 'fragmentshown', function( event ) {
-    //   if (event.fragment.clientHeight > 50) {
-    //     var screenHeight = $('body').height();
-    //     var fragment = $(event.fragment);
-    //     if (fragment.height() < screenHeight) {
-    //       if (fragment.next().length != 0) {
-    //         $('body').animate({scrollTop: fragment.prev().offset()['top'] + fragment.prev().height() + 12 + fragment.height() - screenHeight}, "slow");
-    //       }
-    //       /*
-    //       if (event.fragment.nextSibling) {
-    //         $('body').animate({scrollTop: $(event.fragment.nextSibling).offset()['top'] - screenHeight}, "slow");
-    //       }
-    //       */
-    //       else {
-    //         $('body').animate({scrollTop: $('section .present').height() + $('section .present').offset()['top'] + 2 - screenHeight}, "slow");
-    //       }
-    //     }
-    //     else {
-    //       $('body').animate({scrollTop: fragment.prev().offset()['top'] + fragment.prev().height() - 88}, "slow");
-    //     }
-    //   }
-    //   console.log(event)
-    //   MathJax.Hub.Rerender();
-    // });
-    //
-    // Reveal.addEventListener( 'fragmenthidden', function( event ) {
-    //   if (event.fragment.clientHeight > 50) {
-    //     var screenHeight = $('body').height();
-    //     var previous = $(event.fragment).prev();
-    //     if (previous.prev().length == 0) {
-    //       $('body').animate({scrollTop: 0}, 'slow');
-    //     }
-    //     else {
-    //       $('body').animate({scrollTop: Math.max(previous.offset()['top'] + previous.height() + 2 -screenHeight, 0)}, "slow");
-    //     }
-    //   }
-    //   console.log(event)
-    //   MathJax.Hub.Rerender();
-    // });
 
     setupOutputObserver();
   });
@@ -408,14 +349,14 @@ function Unselecter(){
 
 function fixCellHeight(){
   // Let's start with all the cell unselected, the unselect the current selected one
-  var scell = IPython.notebook.get_selected_cell()
-  scell.unselect()
-  // This select/unselect code cell triggers the "correct" heigth in the codemirror instance
+  var scell = IPython.notebook.get_selected_cell();
+  scell.unselect();
+  // This select/unselect code cell triggers the "correct" height in the codemirror instance
   var cells = IPython.notebook.get_cells();
   for(var i in cells){
     var cell = cells[i];
     if (cell.cell_type === "code") {
-      cell.select()
+      cell.select();
       cell.unselect();
     }
   }
@@ -431,6 +372,8 @@ function setupKeys(mode){
   if (mode === 'reveal_mode') {
     IPython.keyboard_manager.command_shortcuts.set_shortcut("shift-enter", "jupyter-notebook:run-cell");
     IPython.keyboard_manager.edit_shortcuts.set_shortcut("shift-enter", "jupyter-notebook:run-cell");
+    IPython.keyboard_manager.command_shortcuts.set_shortcut("alt-c", "jupyter-notebook:clear-all-cells-output");
+    IPython.keyboard_manager.edit_shortcuts.set_shortcut("alt-c", "jupyter-notebook:clear-all-cells-output");
   } else if (mode === 'notebook_mode') {
     IPython.keyboard_manager.command_shortcuts.set_shortcut("shift-enter", "jupyter-notebook:run-cell-and-select-next");
     IPython.keyboard_manager.edit_shortcuts.set_shortcut("shift-enter", "jupyter-notebook:run-cell-and-select-next");
@@ -553,6 +496,12 @@ function Remover(config) {
   for(var i in cells){
     $('.cell:nth('+i+')').removeClass('reveal-skip');
     $('div#notebook-container').append(cells[i].element);
+    // Need to do this to get the headings back
+    // TODO: Make this less hacky
+    if (cells[i].cell_type === 'markdown') {
+      cells[i].unrender();
+      cells[i].render();
+    }
   }
 
   $('div#notebook-container').children('section').remove();

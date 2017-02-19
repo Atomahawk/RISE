@@ -379,8 +379,10 @@ body {
 .reveal .controls {
 	display: none;
 	position: fixed;
-	width: 110px;
-	height: 110px;
+	/*width: 110px;
+	height: 110px;*/
+	width: 10%;
+	height: 10%;
 	z-index: 30;
 	right: 0px;
 	/*bottom: 10px;*/
@@ -392,7 +394,7 @@ body {
 	opacity: 0.05;
 	width: 0;
 	height: 0;
-	border: 12px solid transparent;
+	border: 10px solid transparent;
 
 	-moz-transform: scale(.9999);
 
@@ -413,9 +415,9 @@ body {
 }
 
 	.reveal .controls div.navigate-left {
-		top: 42px;
+		top: 26px;
 
-		border-right-width: 22px;
+		border-right-width: 20px;
 		border-right-color: #eee;
 	}
 		.reveal .controls div.navigate-left.fragmented {
@@ -423,10 +425,10 @@ body {
 		}
 
 	.reveal .controls div.navigate-right {
-		left: 74px;
-		top: 42px;
+		left: 58px;
+		top: 26px;
 
-		border-left-width: 22px;
+		border-left-width: 20px;
 		border-left-color: #eee;
 	}
 		.reveal .controls div.navigate-right.fragmented {
@@ -434,9 +436,10 @@ body {
 		}
 
 	.reveal .controls div.navigate-up {
-		left: 42px;
+		top: -8px;
+		left: 34px;
 
-		border-bottom-width: 22px;
+		border-bottom-width: 20px;
 		border-bottom-color: #eee;
 	}
 		.reveal .controls div.navigate-up.fragmented {
@@ -444,10 +447,10 @@ body {
 		}
 
 	.reveal .controls div.navigate-down {
-		left: 42px;
-		top: 74px;
+		left: 34px;
+		top: 50px;
 
-		border-top-width: 22px;
+		border-top-width: 20px;
 		border-top-color: #eee;
 	}
 		.reveal .controls div.navigate-down.fragmented {
@@ -492,6 +495,7 @@ body {
  * SLIDE NUMBER
  *********************************************/
 
+/*
 .reveal .slide-number {
 	position: fixed;
 	display: block;
@@ -501,6 +505,7 @@ body {
 	z-index: 31;
 	font-size: 12px;
 }
+*/
 
 /*********************************************
  * SLIDES

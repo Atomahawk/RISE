@@ -29,6 +29,11 @@ var Reveal = (function(){
 			minScale: 0.2,
 			maxScale: 1.0,
 
+			// Headers and Footer sections by default?
+			//TODO: Make use of this
+			headers: true,
+			footer: true,
+
 			// Display controls in the bottom right corner
 			controls: true,
 
@@ -372,7 +377,8 @@ var Reveal = (function(){
 		// dom.headers = createSingletonNode( dom.wrapper, 'div', 'headers', null);
 
 		// Footers element
-		dom.footers = createSingletonNode( dom.wrapper, 'div', 'footers', null);
+		dom.footer = createSingletonNode( dom.wrapper, 'div', 'slide-footer', '<img>');
+		$('.slide-footer').attr('id', 'slide-footer');
 
 		// Progress bar
 		dom.progress = createSingletonNode( dom.wrapper, 'div', 'progress', '<span></span>' );
@@ -380,14 +386,21 @@ var Reveal = (function(){
 
 		// Arrow controls
 		// TODO: Understand these better and maybe change
+		/*
 		createSingletonNode( dom.wrapper, 'aside', 'controls',
+			'<div class="navigate-left"></div>' +
+			'<div class="navigate-right"></div>' +
+			'<div class="navigate-up"></div>' +
+			'<div class="navigate-down"></div>' );
+		*/
+		createSingletonNode( dom.footer, 'aside', 'controls',
 			'<div class="navigate-left"></div>' +
 			'<div class="navigate-right"></div>' +
 			'<div class="navigate-up"></div>' +
 			'<div class="navigate-down"></div>' );
 
 		// Slide number
-		dom.slideNumber = createSingletonNode( dom.wrapper, 'div', 'slide-number', '' );
+		//dom.slideNumber = createSingletonNode( dom.wrapper, 'div', 'slide-number', '' );
 
 		// State background element [DEPRECATED]
 		createSingletonNode( dom.wrapper, 'div', 'state-background', null );
@@ -397,6 +410,7 @@ var Reveal = (function(){
 
 		// Cache references to elements
 		dom.controls = document.querySelector( '.reveal .controls' );
+		dom.slideNumber = createSingletonNode(dom.controls, 'div', 'slide-number', '');
 
 		// There can be multiple instances of controls throughout the page
 		dom.controlsLeft = toArray( document.querySelectorAll( '.navigate-left' ) );

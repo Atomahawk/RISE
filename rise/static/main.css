@@ -73,11 +73,13 @@
           transition-duration: 0.2s;
   -webkit-transition-timing-function: ease;
           transition-timing-function: ease;
+  /*
   right: 3.7em;
   bottom: 3.2em;
+  */
   font-size: 100%;
 }
-/*.rise-enabled .reveal .controls .navigate-left,
+.rise-enabled .reveal .controls .navigate-left,
 .rise-enabled .reveal .controls .navigate-left.enabled {
   border-right-color: #727272;
 }
@@ -108,7 +110,7 @@
 .rise-enabled .reveal .controls .navigate-down.enabled:hover,
 .rise-enabled .reveal .controls .navigate-down.enabled.enabled:hover {
   border-top-color: #dfdfdf;
-}*/
+}
 .rise-enabled .reveal .progress {
   margin-bottom: 0;
 }
